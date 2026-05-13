@@ -6,27 +6,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # 更新到 v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Android NDK
-        uses: n0rt3n/setup-ndk@v1
-        with:
-          ndk-version: r25c
-        continue-on-error: true # 预防该插件失效
-
-      # 如果上面的插件找不到，手动检查环境中的 NDK
       - name: Build with CMake
         run: |
           mkdir build && cd build
-          # 使用 GitHub 运行环境自带的 NDK 路径
-          cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_LATEST_HOME/build/cmake/android.toolchain.cmake \
+          # 直接使用系统预装的 NDK 路径
+          cmake -DCMAKE_TOOLCHAIN_FILE=$ANDROID_NDK_HOME/build/cmake/android.toolchain.cmake \
                 -DANDROID_ABI=arm64-v8a \
                 -DANDROID_PLATFORM=android-24 \
                 ..
           make
 
       - name: Upload result
-        uses: actions/upload-artifact@v4 # 必须更新到 v4 以解决报错
+        uses: actions/upload-artifact@v4
         with:
           name: fix-gg-library
           path: build/*.so
